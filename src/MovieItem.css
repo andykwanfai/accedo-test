@@ -1,0 +1,9 @@
+.movie_item {
+
+    margin: 5px auto;
+}
+
+.movie_item a:focus {
+    border: red solid;
+    border-width: thick
+}
