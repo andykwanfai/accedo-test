@@ -1,5 +1,5 @@
 import React, { Component } from "react"
-import { Card, CardText, CardImg, CardBody, CardTitle, Container } from 'reactstrap'
+import { Button, Card, CardText, CardImg, CardBody, CardTitle, Container } from 'reactstrap'
 import axios from "axios"
 import { Redirect } from "react-router-dom";
 class Detail extends Component {
@@ -17,6 +17,14 @@ class Detail extends Component {
       this.setState({ data: response.data.items[0] })
     })
   }
+
+  playPause = () => {
+    if (this.video.paused)
+      this.video.play();
+    else
+      this.video.pause();
+  }
+
   render() {
     if (!sessionStorage.getItem('user_key')) {
       return <Redirect from="/" to="/login" />
@@ -41,11 +49,12 @@ class Detail extends Component {
               <CardText>
                 Trailer:
                 <br />
-                <video controls>
+                <video ref={video=>{this.video=video}} controls>
                   <source src={data.videoSrc} type="video/mp4" />
                   Your browser does not support the video tag.
                 </video>
               </CardText>
+              <Button onClick={this.playPause}>Play/Pause</Button>
             </CardBody>
           </Card>
         </Container>
