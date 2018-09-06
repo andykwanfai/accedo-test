@@ -22,7 +22,7 @@ class Movies extends Component {
     });
 
     //listen key press
-    document.addEventListener("keypress", this.handleKeypress)
+    document.addEventListener("keydown", this.handleKeypress)
 
     //get all data
     axios({
@@ -30,8 +30,16 @@ class Movies extends Component {
       url: '/api/movie',
       headers: { 'X-SimpleOvpApi': sessionStorage.getItem('user_key') }
     }).then(response => {
-      this.setState({ items: response.data.items })
-    })
+      this.setState({ movies: response.data.items })
+    }).then(
+      axios({
+        method: 'GET',
+        url: '/api/serie',
+        headers: { 'X-SimpleOvpApi': sessionStorage.getItem('user_key') }
+      }).then(response => {
+        this.setState({ series: response.data.items })
+      })
+    )
   }
 
   //get the number of items per row
@@ -62,11 +70,10 @@ class Movies extends Component {
   }
 
   handleKeypress = e => {
-
     let selectedItem = this.state.selectedItem
     let itemPerRow = this.state.itemPerRow
-    if (selectedItem == -1) {
-      selectedItem == 0
+    if (selectedItem === -1) {
+      selectedItem = 0
     }
     else {
       switch (e.key) {
@@ -85,7 +92,7 @@ class Movies extends Component {
       default:
       }
     }
-    if (selectedItem >= 0 && selectedItem < this.state.items.length) {
+    if (selectedItem >= 0 && selectedItem < this.state.movies.length + this.state.series.length) {
       document.getElementsByClassName("movie_item")[selectedItem].getElementsByTagName("A")[0].focus();
       this.setState({ selectedItem: selectedItem })
     }
@@ -96,7 +103,7 @@ class Movies extends Component {
       return <Redirect from="/" to="/login" />
     }
 
-    else if (!this.state.items) {
+    else if (!this.state.movies || !this.state.series) {
       return <div>Loading</div>
     }
     else {
@@ -105,10 +112,17 @@ class Movies extends Component {
           <h1>Movies</h1>
           <hr />
           <Row >
-            {this.state.items.map(data => {
+            {this.state.movies.map(data => {
               return (
                 <Col xl='2' lg='3' md='4' sm='6' xs='12' key={data.id}>
-                  <MovieItem tabIndex={data.id} data={data} />
+                  <MovieItem data={data} />
+                </Col>
+              )
+            })}
+            {this.state.series.map(data => {
+              return (
+                <Col xl='2' lg='3' md='4' sm='6' xs='12' key={data.id}>
+                  <MovieItem data={data} />
                 </Col>
               )
             })}
